@@ -55,8 +55,7 @@ exec:
 	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) $(run)
 
 ## clean: Clean build files. Runs `go clean` internally.
-clean:
-	@(MAKEFILE) go-clean
+clean: go-clean
 
 go-compile: go-clean go-get go-build
 

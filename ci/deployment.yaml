@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gostart
+  labels:
+    app: gostart
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  clusterIP: None
+  selector:
+    app: gostart
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gostart
+  labels:
+    app: gostart
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gostart
+  template:
+    metadata:
+      labels:
+        app: gostart
+    spec:
+      containers:
+      - name: gostart
+        image: gostart

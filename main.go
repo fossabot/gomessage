@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rmeharg/gostart/subpackage"
+	"github.com/rmeharg/gostart/sub"
 )
 
 func server() {
@@ -18,9 +18,9 @@ func server() {
 }
 
 func main() {
-	fmt.Println("Hello, main world.")
+	fmt.Println("Hello, main world!")
 
-	subpackage.HelloExportedFunction()
+	sub.HelloExportedFunction()
 
 	server()
 }

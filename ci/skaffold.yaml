@@ -1,0 +1,17 @@
+apiVersion: skaffold/v2beta12
+kind: Config
+metadata:
+  name: gostart
+build:
+  artifacts:
+  - image: gostart
+    docker:
+      dockerfile: ci/Dockerfile
+deploy:
+  kubectl:
+    manifests:
+    - ci/deployment.yaml
+portForward:
+- resourceType: service
+  resourceName: gostart
+  port: 8080
