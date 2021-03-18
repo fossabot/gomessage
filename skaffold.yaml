@@ -4,7 +4,7 @@ metadata:
   name: gostart
 build:
   artifacts:
-  - image: dockerfile-image
+  - image: gostart
     docker:
       dockerfile: Dockerfile
 deploy:
@@ -13,5 +13,5 @@ deploy:
     - deployment.yaml
 portForward:
 - resourceType: service
-  resourceName: dockerfile-image
+  resourceName: gostart
   port: 8080

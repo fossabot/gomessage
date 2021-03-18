@@ -1,15 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
 
-import "github.com/rmeharg/gostart/subpackage"
+	"github.com/gin-gonic/gin"
+	"github.com/rmeharg/gostart/subpackage"
+)
 
-import "github.com/gin-gonic/gin"
-
-func main() {
-	fmt.Println("Hello, main world.")
-	subpackage.HelloExportedFunction()
-
+func server() {
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -17,4 +15,12 @@ func main() {
 		})
 	})
 	r.Run() // listen and serve on 0.0.0.0:8080
+}
+
+func main() {
+	fmt.Println("Hello, main world.")
+
+	subpackage.HelloExportedFunction()
+
+	server()
 }

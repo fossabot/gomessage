@@ -1,33 +1,33 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: dockerfile-image
+  name: gostart
   labels:
-    app: dockerfile-image
+    app: gostart
 spec:
   ports:
   - port: 8080
     protocol: TCP
   clusterIP: None
   selector:
-    app: dockerfile-image
+    app: gostart
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dockerfile-image
+  name: gostart
   labels:
-    app: dockerfile-image
+    app: gostart
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: dockerfile-image
+      app: gostart
   template:
     metadata:
       labels:
-        app: dockerfile-image
+        app: gostart
     spec:
       containers:
-      - name: dockerfile-image
-        image: dockerfile-image
+      - name: gostart
+        image: gostart

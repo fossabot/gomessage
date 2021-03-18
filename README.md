@@ -1,7 +1,7 @@
 ## Go Start!
 
 ```
-skaffold 
+skaffold build
 ```
 
 ### Development
@@ -9,5 +9,6 @@ skaffold
 ```
 go get github.com/azer/yolo
 make help
+make start
 ```
 
