@@ -1,10 +1,10 @@
 apiVersion: skaffold/v2beta12
 kind: Config
 metadata:
-  name: gostart
+  name: gomessage
 build:
   artifacts:
-  - image: gostart
+  - image: gomessage
     docker:
       dockerfile: ci/Dockerfile
 deploy:
@@ -13,5 +13,5 @@ deploy:
     - ci/deployment.yaml
 portForward:
 - resourceType: service
-  resourceName: gostart
+  resourceName: gomessage
   port: 8080

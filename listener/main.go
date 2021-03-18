@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rmeharg/gostart/sub"
+	"github.com/rmeharg/gomessage/sub"
 )
 
 func server() {

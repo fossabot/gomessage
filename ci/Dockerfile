@@ -20,7 +20,7 @@ RUN adduser \
     --uid "${UID}" \    
     "${USER}"
 
-WORKDIR $GOPATH/src/github.com/rmeharg/gostart/
+WORKDIR $GOPATH/src/github.com/rmeharg/gomessage/
 COPY . .
 
 # Fetch dependencies.
@@ -29,7 +29,7 @@ RUN go get -d -v
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
     -ldflags='-w -s -extldflags "-static"' -a \
-    -o /go/bin/gostart .
+    -o /go/bin/gomessage .
 
 # Step 2
 FROM scratch
@@ -41,7 +41,7 @@ COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/group /etc/group
 
 # Copy our static executable
-COPY --from=builder /go/bin/gostart /go/bin/gostart
+COPY --from=builder /go/bin/gomessage /go/bin/gomessage
 
 # Use an unprivileged user.
 USER appuser:appuser
@@ -49,5 +49,5 @@ USER appuser:appuser
 # Expose on a port > 1024
 EXPOSE 8080
 
-# Run the gostart binary.
-ENTRYPOINT ["/go/bin/gostart"]
+# Run the gomessage binary.
+ENTRYPOINT ["/go/bin/gomessage"]

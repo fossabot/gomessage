@@ -1,4 +1,4 @@
-module github.com/rmeharg/gostart
+module github.com/rmeharg/gomessage
 
 go 1.15
 
