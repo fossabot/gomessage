@@ -1,0 +1,45 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "broadcaster",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "remotePath": "",
+            "program": "${workspaceFolder}/broadcaster",
+            "args": [],
+            "showLog": true
+        },
+        {
+            "name": "listener",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "remotePath": "",
+            "program": "${workspaceFolder}/listener",
+            "args": [],
+            "showLog": true
+        },
+        {
+            "name": "decoder",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "remotePath": "",
+            "program": "${workspaceFolder}/decoder",
+            "args": [],
+            "showLog": true
+        }
+    ],
+    "compounds": [
+        {
+            "name": "All",
+            "configurations": [
+                "broadcaster",
+                "listener",
+                "decoder",
+            ]
+        }
+    ]
+}
