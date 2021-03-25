@@ -1,33 +1,142 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: gomessage
-  labels:
-    app: gomessage
-spec:
-  ports:
-  - port: 8080
-    protocol: TCP
-  clusterIP: None
-  selector:
-    app: gomessage
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gomessage
+  name: broadcaster
   labels:
     app: gomessage
+    component: broadcaster
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: gomessage
+      component: broadcaster
   template:
     metadata:
       labels:
         app: gomessage
+        component: broadcaster
     spec:
       containers:
-      - name: gomessage
-        image: gomessage
+      - name: broadcaster
+        image: broadcaster
+        args:
+        - "-multicast"
+        - "239.0.0.0:9002"
+        - "-messageCount"
+        - "100"
+        - "-duplicate"
+        - "true"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: listener
+  labels:
+    app: gomessage
+    component: listener
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gomessage
+      component: listener
+  template:
+    metadata:
+      labels:
+        app: gomessage
+        component: listener
+    spec:
+      containers:
+      - name: listener
+        image: listener
+        args:
+        - "-amqp"
+        - "amqp://user:CHANGEME@rabbitmq.rabbitmq.svc.cluster.local:5672"
+        - "-multicast"
+        - "239.0.0.0:9002"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: decoder
+  labels:
+    app: gomessage
+    component: decoder
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gomessage
+      component: decoder
+  template:
+    metadata:
+      labels:
+        app: gomessage
+        component: decoder
+    spec:
+      containers:
+      - name: decoder
+        image: decoder
+        args:
+        - "-amqp"
+        - "amqp://user:CHANGEME@rabbitmq.rabbitmq.svc.cluster.local:5672"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: writer
+  labels:
+    app: gomessage
+    component: wrtier
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gomessage
+      component: writer
+  template:
+    metadata:
+      labels:
+        app: gomessage
+        component: writer
+    spec:
+      containers:
+      - name: writer
+        image: writer
+        args:
+        - "-amqp"
+        - "amqp://user:CHANGEME@rabbitmq.rabbitmq.svc.cluster.local:5672"
+        - "-influxdb"
+        - "http://influxdb-enterprise-data.influxdb.svc.cluster.local:8086"
+        - "-influxdb-authtoken"
+        - "admin:admin"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/dmichael/go-multicast/multicast"
@@ -14,11 +15,9 @@ import (
 
 const (
 	// EXCHANGENAME is the name of the RabbitMQ exchange
-	EXCHANGENAME = "go-test-exchange"
+	EXCHANGENAME = "deduplication-exchange"
 	// ROUTINGKEY is the name of the RabbitMQ routing key for routing messages
-	ROUTINGKEY = "go-test-key"
-	// CONSUMERNAME is the name of the RabbitMQ consumer
-	CONSUMERNAME = "go-amqp-decoder"
+	ROUTINGKEY = "deduplication-routing-key"
 )
 
 var (
@@ -51,14 +50,19 @@ func initAmqp() {
 	ch, err = conn.Channel()
 	amqpFailOnError(err, "Failed to open a channel")
 
+	var exchangeArgs = make(amqp.Table)
+	exchangeArgs["x-cache-persistence"] = "disk"
+	exchangeArgs["x-cache-size"] = "10000"
+	exchangeArgs["x-cache-ttl"] = "300"
+
 	err = ch.ExchangeDeclare(
-		EXCHANGENAME, // name
-		"direct",     // type
-		true,         // durable
-		false,        // auto-deleted
-		false,        // internal
-		false,        // noWait
-		nil,          // arguments
+		EXCHANGENAME,              // name of the exchange
+		"x-message-deduplication", // type
+		true,                      // durable
+		false,                     // delete when complete
+		false,                     // internal
+		false,                     // noWait
+		exchangeArgs,              // arguments
 	)
 	amqpFailOnError(err, "Failed to declare the Exchange")
 }
@@ -71,13 +75,19 @@ func amqpFailOnError(err error, msg string) {
 }
 
 func publishMessages(messages []string) {
+
 	for i := 0; i < len(messages); i++ {
+		var msgHeaders = make(amqp.Table)
+		stamp := strings.Split(messages[i], "-")
+		msgHeaders["x-deduplication-header"] = stamp[0]
+
 		err := ch.Publish(
 			EXCHANGENAME, // exchange
 			ROUTINGKEY,   // routing key
 			false,        // mandatory
 			false,        // immediate
 			amqp.Publishing{
+				Headers:      msgHeaders,
 				DeliveryMode: amqp.Persistent,
 				ContentType:  "text/plain",
 				Body:         []byte(messages[i]),

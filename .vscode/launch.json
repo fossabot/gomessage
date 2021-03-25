@@ -8,8 +8,11 @@
             "mode": "auto",
             "remotePath": "",
             "program": "${workspaceFolder}/broadcaster",
-            "args": [],
-            "showLog": true
+            "args": [
+                "-count",
+                "100"
+            ],
+            "showLog": false
         },
         {
             "name": "listener",
@@ -19,7 +22,7 @@
             "remotePath": "",
             "program": "${workspaceFolder}/listener",
             "args": [],
-            "showLog": true
+            "showLog": false
         },
         {
             "name": "decoder",
@@ -29,7 +32,27 @@
             "remotePath": "",
             "program": "${workspaceFolder}/decoder",
             "args": [],
-            "showLog": true
+            "showLog": false
+        },
+        {
+            "name": "writer",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "remotePath": "",
+            "program": "${workspaceFolder}/writer",
+            "args": [],
+            "showLog": false
+        },
+        {
+            "name": "reporter",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "remotePath": "",
+            "program": "${workspaceFolder}/reporter",
+            "args": [],
+            "showLog": false
         }
     ],
     "compounds": [
@@ -39,6 +62,7 @@
                 "broadcaster",
                 "listener",
                 "decoder",
+                "writer"
             ]
         }
     ]

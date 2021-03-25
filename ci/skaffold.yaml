@@ -4,14 +4,21 @@ metadata:
   name: gomessage
 build:
   artifacts:
-  - image: gomessage
-    docker:
-      dockerfile: ci/Dockerfile
+  - image: broadcaster
+    context: broadcaster
+  - image: listener
+    context: listener
+  - image: decoder
+    context: decoder
+  - image: writer
+    context: writer
+  # - image: reporter
+  #   context: reporter
 deploy:
   kubectl:
     manifests:
     - ci/deployment.yaml
-portForward:
-- resourceType: service
-  resourceName: gomessage
-  port: 8080
+# portForward:
+# - resourceType: service
+#   resourceName: gomessage
+#   port: 8080

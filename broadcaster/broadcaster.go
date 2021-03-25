@@ -12,6 +12,8 @@ import (
 
 var (
 	multicastURI = flag.String("multicast", "239.0.0.0:9002", "UDP Multicast URI")
+	messageCount = flag.Int("count", 0, "Amount of messages to broadcast, 0 for infinite")
+	duplicate    = flag.Bool("duplicate", true, "Send the same messages twice to simulate deplication")
 )
 
 func init() {
@@ -31,12 +33,21 @@ func ping(addr string) {
 		log.Fatal(err)
 	}
 
+	var i int = 0
 	for {
 		ts := time.Now().Unix()
 		stamp := fmt.Sprint(ts)
-		conn.Write([]byte(stamp + "-datatest"))
+		msg := stamp + "-datatest" + fmt.Sprint(i)
+		conn.Write([]byte(msg))
+		if *duplicate {
+			conn.Write([]byte(msg))
+		}
 		time.Sleep(1 * time.Second)
-		log.Infof("[x] Broadcast a message:  %s", stamp+"-datatest")
+		log.Infof("[x] Broadcast a message:  %s", msg)
+		i++
+		if i > *messageCount && *messageCount != 0 {
+			break
+		}
 	}
 }
 
