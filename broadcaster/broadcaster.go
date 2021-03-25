@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/dmichael/go-multicast/multicast"
@@ -43,7 +45,7 @@ func ping(addr string) {
 			conn.Write([]byte(msg))
 		}
 		time.Sleep(1 * time.Second)
-		log.Infof("[x] Broadcast a message:  %s", msg)
+		log.Infof("[x] Broadcast a message: %s", msg)
 		i++
 		if i > *messageCount && *messageCount != 0 {
 			break
@@ -51,8 +53,15 @@ func ping(addr string) {
 	}
 }
 
+func wait() {
+	exitSignal := make(chan os.Signal)
+	signal.Notify(exitSignal, syscall.SIGINT, syscall.SIGTERM)
+	<-exitSignal
+}
+
 func main() {
 	log.Infoln("Start broadcaster...")
 	log.Infof("Broadcasting to %s\n", *multicastURI)
 	ping(*multicastURI)
+	wait()
 }
