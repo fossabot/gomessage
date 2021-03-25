@@ -4,17 +4,17 @@ metadata:
   name: gomessage
 build:
   artifacts:
-    - image: broadcaster
+    - image: rmeharg/broadcaster
       context: broadcaster
-    - image: listener
+    - image: rmeharg/listener
       context: listener
-    - image: decoder
+    - image: rmeharg/decoder
       context: decoder
-    - image: writer
+    - image: rmeharg/writer
       context: writer
-    - image: reporter
+    - image: rmeharg/reporter
       context: reporter
 deploy:
   kubectl:
     manifests:
-      - ci/deployment.yaml
+      - .ci/deployment.yaml

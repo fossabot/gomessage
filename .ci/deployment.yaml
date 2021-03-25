@@ -20,11 +20,11 @@ spec:
     spec:
       containers:
         - name: broadcaster
-          image: broadcaster
+          image: rmeharg/broadcaster
           args:
             - "-multicast"
             - "239.0.0.0:9002"
-            - "-messageCount"
+            - "-count"
             - "100"
             - "-duplicate"
             - "true"
@@ -57,7 +57,7 @@ spec:
     spec:
       containers:
         - name: listener
-          image: listener
+          image: rmeharg/listener
           args:
             - "-amqp"
             - "amqp://user:CHANGEME@rabbitmq.rabbitmq.svc.cluster.local:5672"
@@ -92,7 +92,7 @@ spec:
     spec:
       containers:
         - name: decoder
-          image: decoder
+          image: rmeharg/decoder
           args:
             - "-amqp"
             - "amqp://user:CHANGEME@rabbitmq.rabbitmq.svc.cluster.local:5672"
@@ -125,7 +125,7 @@ spec:
     spec:
       containers:
         - name: writer
-          image: writer
+          image: rmeharg/writer
           args:
             - "-amqp"
             - "amqp://user:CHANGEME@rabbitmq.rabbitmq.svc.cluster.local:5672"
@@ -162,7 +162,7 @@ spec:
     spec:
       containers:
         - name: reporter
-          image: reporter
+          image: rmeharg/reporter
           args:
             - "-influxdb"
             - "http://influxdb-enterprise-data.influxdb.svc.cluster.local:8086"
