@@ -5,7 +5,9 @@ import (
 	"crypto/tls"
 	"flag"
 	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go"
@@ -73,11 +75,26 @@ func readDataMessage() {
 	}
 }
 
+func cleanup() {
+	// Close Client
+	log.Infof("Closing client connection")
+	defer client.Close()
+}
+
 func main() {
 	log.Infoln("Start reporter...")
 
-	readDataMessage()
+	// Watch for CTRL+C / SIGTERM
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		cleanup()
+		os.Exit(1)
+	}()
 
-	// Close Client
-	defer client.Close()
+	for {
+		time.Sleep(1 * time.Minute)
+		readDataMessage()
+	}
 }

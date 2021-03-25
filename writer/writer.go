@@ -37,6 +37,7 @@ func init() {
 	initLog()
 	initAmqp()
 	initInfluxDB()
+	initClickhouse()
 }
 
 func initLog() {
@@ -189,6 +190,14 @@ func writeDataMessage(b []byte) {
 	writeAPI.Flush()
 }
 
+func initClickhouse() {
+	// TODO
+}
+
+func writeDataMessageClickhouse(b []byte) {
+	// TODO
+}
+
 func main() {
 	log.Infoln("Start writer...")
 
@@ -201,6 +210,7 @@ func main() {
 		//TODO: Decoding business logic
 
 		writeDataMessage(r.Body)
+		writeDataMessageClickhouse(r.Body)
 
 		count++
 	}

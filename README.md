@@ -14,11 +14,11 @@ pushd listener && pack build listener --builder paketobuildpacks/builder:tiny &&
 pushd decoder && pack build decoder --builder paketobuildpacks/builder:tiny && popd
 pushd writer && pack build writer --builder paketobuildpacks/builder:tiny && popd
 pushd reporter && pack build reporter --builder paketobuildpacks/builder:tiny && popd
-docker run broadcaster
-docker run listener
-docker run decoder
-docker run writer
-docker run reporter
+docker run broadcaster -multicast 239.0.0.0:9002 -messageCount 100 -duplicate true
+docker run listener -multicast 239.0.0.0:9002 -amqp "amqp://user:CHANGEME@rabbitmq.rabbitmq.svc.cluster.local:5672"
+docker run decoder -amqp "amqp://user:CHANGEME@rabbitmq.rabbitmq.svc.cluster.local:5672"
+docker run writer -amqp "amqp://user:CHANGEME@rabbitmq.rabbitmq.svc.cluster.local:5672" -influxdb "http://influxdb-enterprise-data.influxdb.svc.cluster.local:8086" -influxdb-authtoken "admin:admin"
+docker run reporter -influxdb "http://influxdb-enterprise-data.influxdb.svc.cluster.local:8086" -influxdb-authtoken "admin:admin"
 ```
 
 ### Local Development

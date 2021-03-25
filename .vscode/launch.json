@@ -52,7 +52,7 @@
             "remotePath": "",
             "program": "${workspaceFolder}/reporter",
             "args": [],
-            "showLog": false
+            "showLog": false 
         }
     ],
     "compounds": [
