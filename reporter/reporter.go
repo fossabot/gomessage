@@ -11,6 +11,7 @@ import (
 	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go"
+	"github.com/jung-kurt/gofpdf"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -51,10 +52,11 @@ func parseTime(s string) time.Time {
 	return time.Unix(i, 0)
 }
 
-func readDataMessage() {
+func readDataMessage() []string {
 	queryAPI := client.QueryAPI("")
 	// get QueryTableResult
 
+	var rows []string
 	result, err := queryAPI.Query(context.Background(), `from(bucket:"testdata")|> range(start: -24h) |> filter(fn: (r) => r._measurement == "stat")`)
 	if err == nil {
 		// Iterate over query response
@@ -65,6 +67,7 @@ func readDataMessage() {
 			}
 			// Access data
 			log.Infof("value: %v\n", result.Record().Value())
+			rows = append(rows, result.Record().String())
 		}
 		// check for an error
 		if result.Err() != nil {
@@ -72,6 +75,21 @@ func readDataMessage() {
 		}
 	} else {
 		panic(err)
+	}
+
+	return rows
+}
+
+func createPDF(rows []string) {
+	pdf := gofpdf.New("P", "mm", "A4", "")
+	pdf.AddPage()
+	pdf.SetFont("Arial", "B", 16)
+	for _, row := range rows { 
+		pdf.Cell(40, 10, row)
+	}
+	err := pdf.OutputFileAndClose("hello.pdf")
+	if err != nil {
+		log.Fatalf("error creating PDF file: %s\n", err.Error())
 	}
 }
 
@@ -95,6 +113,7 @@ func main() {
 
 	for {
 		time.Sleep(1 * time.Minute)
-		readDataMessage()
+		data := readDataMessage()
+		createPDF(data)
 	}
 }

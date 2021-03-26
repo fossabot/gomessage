@@ -48,10 +48,12 @@ func amqpFailOnError(err error, msg string) {
 	}
 }
 
-var conn *amqp.Connection
-var ch *amqp.Channel
-var confirms chan amqp.Confirmation
-var replies <-chan amqp.Delivery
+var (
+	conn     *amqp.Connection
+	ch       *amqp.Channel
+	confirms chan amqp.Confirmation
+	replies  <-chan amqp.Delivery
+)
 
 func initAmqp() {
 	var err error
@@ -88,6 +90,7 @@ func initAmqp() {
 	var qArgs = make(amqp.Table)
 	qArgs["x-queue-type"] = "quorum"
 	qArgs["x-quorum-initial-group-size"] = 3
+	qArgs["x-single-active-consumer"] = true
 
 	q, err = ch.QueueDeclare(
 		QUEUENAME, // name, leave empty to generate a unique name

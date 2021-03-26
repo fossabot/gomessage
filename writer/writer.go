@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"database/sql"
 	"flag"
 	"fmt"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ClickHouse/clickhouse-go"
 	influxdb2 "github.com/influxdata/influxdb-client-go"
 	"github.com/influxdata/influxdb-client-go/api"
 	log "github.com/sirupsen/logrus"
@@ -27,9 +29,10 @@ const (
 )
 
 var (
-	amqpURI     = flag.String("amqp", "amqp://guest:guest@localhost:5672/", "AMQP URI")
-	influxURI   = flag.String("influxdb", "http://localhost:8086", "InfluxDB URI")
-	influxToken = flag.String("influxdb-authtoken", "admin:admin", "InfluxDB authentication token (optional)")
+	amqpURI       = flag.String("amqp", "amqp://guest:guest@localhost:5672/", "AMQP URI")
+	influxURI     = flag.String("influxdb", "http://localhost:8086", "InfluxDB URI")
+	influxToken   = flag.String("influxdb-authtoken", "admin:admin", "InfluxDB authentication token (optional)")
+	clickhouseURI = flag.String("clickhouse", "tcp://127.0.0.1:9000?debug=true", "Clickhouse URI")
 )
 
 func init() {
@@ -53,9 +56,11 @@ func amqpFailOnError(err error, msg string) {
 	}
 }
 
-var conn *amqp.Connection
-var ch *amqp.Channel
-var replies <-chan amqp.Delivery
+var (
+	conn    *amqp.Connection
+	ch      *amqp.Channel
+	replies <-chan amqp.Delivery
+)
 
 func initAmqp() {
 	var err error
@@ -87,6 +92,7 @@ func initAmqp() {
 	var qArgs = make(amqp.Table)
 	qArgs["x-queue-type"] = "quorum"
 	qArgs["x-quorum-initial-group-size"] = 3
+	qArgs["x-single-active-consumer"] = true
 
 	q, err = ch.QueueDeclare(
 		QUEUENAME, // name, leave empty to generate a unique name
@@ -130,9 +136,11 @@ func initAmqp() {
 	amqpFailOnError(err, "Error consuming the Queue")
 }
 
-var client influxdb2.Client
-var writeAPI api.WriteAPI
-var errorsCh <-chan error
+var (
+	client   influxdb2.Client
+	writeAPI api.WriteAPI
+	errorsCh <-chan error
+)
 
 func initInfluxDB() {
 	// Create a new client using an InfluxDB server base URL and an authentication token
@@ -190,12 +198,91 @@ func writeDataMessage(b []byte) {
 	writeAPI.Flush()
 }
 
+var (
+	connect *sql.DB
+	tx      *sql.Tx
+	stmt    *sql.Stmt
+)
+
 func initClickhouse() {
-	// TODO
+	connect, err := sql.Open("clickhouse", *clickhouseURI)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := connect.Ping(); err != nil {
+		if exception, ok := err.(*clickhouse.Exception); ok {
+			fmt.Printf("[%d] %s \n%s\n", exception.Code, exception.Message, exception.StackTrace)
+		} else {
+			fmt.Println(err)
+		}
+		return
+	}
+
+	_, err = connect.Exec(`
+		CREATE TABLE IF NOT EXISTS element (
+			id      String,
+			name    String,
+			source  String,
+			message String,
+			time    DateTime
+		) engine=Memory
+	`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tx, _ = connect.Begin()
+	stmt, _ = tx.Prepare("INSERT INTO element (id, name, source, message, time) VALUES (?, ?, ?, ?, ?)")
+
+	defer stmt.Close()
 }
 
 func writeDataMessageClickhouse(b []byte) {
-	// TODO
+	message := strings.Split(string(b), "-")
+	stamp := message[0]
+	data := message[1]
+
+	for i := 0; i < 100; i++ {
+		if _, err := stmt.Exec(
+			"test",
+			"test",
+			"255.255.255.255",
+			data,
+			parseTime(stamp),
+		); err != nil {
+			log.Fatal(err)
+		}
+	}
+	if err := tx.Commit(); err != nil {
+		log.Fatal(err)
+	}
+
+	// TODO: Move query to reporter
+	// rows, err := connect.Query("SELECT id, name, source, message, time FROM element")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer rows.Close()
+
+	// for rows.Next() {
+	// 	var (
+	// 		id      string
+	// 		name    string
+	// 		source  string
+	// 		message string
+	// 		time    time.Time
+	// 	)
+	// 	if err := rows.Scan(&id, &name, &source, &message, &time); err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	log.Printf("id: %s, name: %d, source: %d, message: %v, time: %s", id, name, source, message, time)
+	// }
+	// if err := rows.Err(); err != nil {
+	// 	log.Fatal(err)
+	// }
+	// if _, err := connect.Exec("DROP TABLE example"); err != nil {
+	// 	log.Fatal(err)
+	// }
 }
 
 func main() {
@@ -215,12 +302,18 @@ func main() {
 		count++
 	}
 
-	// Close Channel
+	// Close AMQP RabbitMQ Channel
 	defer ch.Close()
 
-	// Close Connection
+	// Close AMQP RabbitMQ Connection
 	defer conn.Close()
 
-	// Close Client
+	// Close InfluxDB Client
 	defer client.Close()
+
+	// Close Clickhouse statement
+	defer stmt.Close()
+
+	// Close Clickhouse Connection
+	defer connect.Close()
 }

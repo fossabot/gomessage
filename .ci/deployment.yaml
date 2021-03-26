@@ -24,8 +24,8 @@ spec:
           args:
             - "-multicast"
             - "239.0.0.0:9002"
-            - "-count"
-            - "100"
+            #- "-count"
+            #- "100"
             - "-duplicate"
             - "true"
           resources:
@@ -133,6 +133,8 @@ spec:
             - "http://influxdb-enterprise-data.influxdb.svc.cluster.local:8086"
             - "-influxdb-authtoken"
             - "admin:admin"
+            - "-clickhouse"
+            - "tcp://clickhouse-distributed.clickhouse.svc.cluster.local:9000?debug=true"
           resources:
             requests:
               memory: "64Mi"
