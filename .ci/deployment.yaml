@@ -175,7 +175,7 @@ spec:
             - "s3-accesskey-id"
             - "admin"
             - "s3-accesskey-secret"
-            - "admin"
+            - "admin1234"
             - "s3-bucket"
             - "myreports"
           resources:

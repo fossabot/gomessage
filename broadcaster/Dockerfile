@@ -21,10 +21,14 @@ RUN adduser \
     "${USER}"
 
 WORKDIR $GOPATH/src/github.com/rmeharg/gomessage/broadcaster
-COPY . .
 
-# Fetch dependencies.
-RUN go get -d -v
+# Use modules, fetch dependencies
+COPY go.mod .
+ENV GO111MODULE=on
+RUN go mod download
+RUN go mod verify
+
+COPY . .
 
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \

@@ -22,7 +22,7 @@ var (
 	influxToken       = flag.String("influxdb-authtoken", "admin:admin", "InfluxDB authentication token (optional)")
 	s3URI             = flag.String("s3", "minio-s3.minio-s3.svc.cluster.local:9000", "S3 URI")
 	s3accesskeyid     = flag.String("s3-accesskey-id", "admin", "S3 access key")
-	s3accesskeysecret = flag.String("s3-accesskey-secret", "admin", "S3 access key")
+	s3accesskeysecret = flag.String("s3-accesskey-secret", "admin1234", "S3 access key")
 	s3bucket          = flag.String("s3-bucket", "myreports", "S3 bucket name")
 )
 
