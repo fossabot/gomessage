@@ -134,7 +134,11 @@ spec:
             - "-influxdb-authtoken"
             - "admin:admin"
             - "-clickhouse"
-            - "tcp://default:default@clickhouse-distributed.clickhouse.svc.cluster.local:9000?debug=true"
+            - "clickhouse-distributed.clickhouse.svc.cluster.local:9000"
+            - "-clickhouse-user"
+            - "clickhouse_operator"
+            - "-clickhouse-password"
+            - "clickhouse_operator_password"
           resources:
             requests:
               memory: "64Mi"

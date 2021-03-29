@@ -123,15 +123,15 @@ func createPDF(rows []string) {
 	for _, row := range rows {
 		pdf.Cell(40, 10, row)
 	}
-	err := pdf.OutputFileAndClose("/hello.pdf")
+	err := pdf.OutputFileAndClose("/report.pdf")
 	if err != nil {
 		log.Fatalf("error creating PDF file: %s\n", err.Error())
 	}
 }
 
 func uploadPDF() {
-	objectName := "hello.pdf"
-	filePath := "/hello.pdf"
+	objectName := "report-" + time.Now().String() + ".pdf"
+	filePath := "/report.pdf"
 	contentType := "application/pdf"
 
 	// Upload the zip file with FPutObject
