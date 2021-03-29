@@ -1,0 +1,29 @@
+{{- if .Values.consumer.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "conveyor.fullname" . }}-consumer
+  labels:
+    {{- include "conveyor.consumer.labels" . | nindent 4 }}
+    component: consumer 
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "conveyor.fullname" . }}-consumer
+  minReplicas: {{ .Values.consumer.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.consumer.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.consumer.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.consumer.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.consumer.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.consumer.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}
