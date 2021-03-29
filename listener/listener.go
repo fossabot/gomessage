@@ -110,7 +110,7 @@ func initUDPListener() {
 }
 
 func main() {
-	log.Println("Starting listener...")
+	log.Infoln("Starting listener...")
 
 	// Close Channel
 	defer ch.Close()

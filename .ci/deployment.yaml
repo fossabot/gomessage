@@ -134,7 +134,7 @@ spec:
             - "-influxdb-authtoken"
             - "admin:admin"
             - "-clickhouse"
-            - "tcp://clickhouse-distributed.clickhouse.svc.cluster.local:9000?debug=true"
+            - "tcp://default:default@clickhouse-distributed.clickhouse.svc.cluster.local:9000?debug=true"
           resources:
             requests:
               memory: "64Mi"
@@ -170,6 +170,14 @@ spec:
             - "http://influxdb-enterprise-data.influxdb.svc.cluster.local:8086"
             - "-influxdb-authtoken"
             - "admin:admin"
+            - "s3"
+            - "minio-s3.minio-s3.svc.cluster.local:9000"
+            - "s3-accesskey-id"
+            - "admin"
+            - "s3-accesskey-secret"
+            - "admin"
+            - "s3-bucket"
+            - "myreports"
           resources:
             requests:
               memory: "64Mi"
