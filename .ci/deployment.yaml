@@ -134,7 +134,7 @@ spec:
             - "-influxdb-authtoken"
             - "admin:admin"
             - "-clickhouse"
-            - "127.0.0.1"
+            - "clickhouse-distributed.clickhouse.svc.cluster.local"
             - "-clickhouse-user"
             - "clickhouse_operator"
             - "-clickhouse-password"

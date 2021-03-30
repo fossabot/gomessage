@@ -93,7 +93,7 @@ func readDataMessage() []string {
 	// get QueryTableResult
 
 	var rows []string
-	result, err := queryAPI.Query(context.Background(), `from(bucket:"testdata")|> range(start: -24h) |> filter(fn: (r) => r._measurement == "stat")`)
+	result, err := queryAPI.Query(context.Background(), `from(bucket:"testdata")|> range(start: -5m) |> filter(fn: (r) => r._measurement == "stat")`)
 	if err == nil {
 		// Iterate over query response
 		for result.Next() {
