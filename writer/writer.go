@@ -11,10 +11,9 @@ import (
 
 	influxdb2 "github.com/influxdata/influxdb-client-go"
 	"github.com/influxdata/influxdb-client-go/api"
+	clickhouse "github.com/leprosus/golang-clickhouse"
 	log "github.com/sirupsen/logrus"
 	"github.com/streadway/amqp"
-
-	batchinsert "github.com/rmeharg/gomessage/writer/batchinsert" // UGLY
 )
 
 const (
@@ -32,7 +31,7 @@ var (
 	amqpURI            = flag.String("amqp", "amqp://user:CHANGEME@localhost:5672/", "AMQP URI")
 	influxURI          = flag.String("influxdb", "http://localhost:8086", "InfluxDB URI")
 	influxToken        = flag.String("influxdb-authtoken", "admin:admin", "InfluxDB authentication token (optional)")
-	clickhouseURI      = flag.String("clickhouse", "127.0.0.1:9000", "Clickhouse URI")
+	clickhouseURI      = flag.String("clickhouse", "127.0.0.1", "Clickhouse URI")
 	clickhouseUser     = flag.String("clickhouse-user", "clickhouse_operator", "Clickhouse username")
 	clickhousePassword = flag.String("clickhouse-password", "clickhouse_operator_password", "Clickhouse password")
 )
@@ -175,7 +174,7 @@ func parseTime(s string) time.Time {
 	if err != nil {
 		panic(err)
 	}
-	return time.Unix(i, 0)
+	return time.Unix(i, 0).UTC()
 }
 
 func writeDataMessage(b []byte) {
@@ -205,67 +204,19 @@ func writeDataMessage(b []byte) {
 	log.Infof("Wrote data message %s to InfluxDB successfully", b)
 }
 
-// var (
-// 	connect *sql.DB
-// 	tx      *sql.Tx
-// 	stmt    *sql.Stmt
-// )
-
-var batch batchinsert.BatchInsert
+var (
+	connect *clickhouse.Conn
+)
 
 func initClickhouse() {
-	createTable := `CREATE TABLE IF NOT EXISTS element (
-		id      String,
-		name    String,
+	connect = clickhouse.New(*clickhouseURI, 8123, *clickhouseUser, *clickhousePassword)
+
+	q := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS element (
+		time    DateTime,
 		source  String,
-		message String,
-		time    DateTime
-	) engine=Memory`
-
-	insertSQL := "INSERT INTO element (id, name, source, message, time) VALUES (?, ?, ?, ?, ?)"
-
-	batch, err := batchinsert.New(
-		insertSQL,
-		batchinsert.WithHost(*clickhouseURI),
-		batchinsert.WithUserInfo(*clickhouseUser, *clickhousePassword),
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = batch.DB().Exec(createTable)
-	if err != nil {
-		panic(err)
-	}
-
-	// connect, err := sql.Open("clickhouse", *clickhouseURI+"&username="+*clickhouseUser+"&password="+*clickhousePassword)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// if err := connect.Ping(); err != nil {
-	// 	if exception, ok := err.(*clickhouse.Exception); ok {
-	// 		fmt.Printf("[%d] %s \n%s\n", exception.Code, exception.Message, exception.StackTrace)
-	// 	} else {
-	// 		fmt.Println(err)
-	// 	}
-	// 	return
-	// }
-
-	// _, err = connect.Exec(`
-	// 	CREATE TABLE IF NOT EXISTS element (
-	// 		id      String,
-	// 		name    String,
-	// 		source  String,
-	// 		message String,
-	// 		time    DateTime
-	// 	) engine=Memory
-	// `)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// tx, _ = connect.Begin()
-	// stmt, _ = tx.Prepare("INSERT INTO element (id, name, source, message, time) VALUES (?, ?, ?, ?, ?)")
+		message String
+	) engine=Memory`)
+	connect.Exec(q)
 
 	log.Infof("Initialized Clickhouse successfully")
 }
@@ -275,58 +226,14 @@ func writeDataMessageClickhouse(b []byte) {
 	stamp := message[0]
 	data := message[1]
 
-	// Execute statement
-	batch.Insert(
-		"test",
-		"test",
+	q := fmt.Sprintf(`INSERT INTO element (time, source, message) VALUES ('%s', '%s', '%s')`,
+		strings.TrimSuffix(parseTime(stamp).Format(time.RFC3339), "Z"),
 		"255.255.255.255",
 		data,
-		parseTime(stamp),
 	)
-
-	// if _, err := tx.Stmt(stmt).Exec(
-	// 	"test",
-	// 	"test",
-	// 	"255.255.255.255",
-	// 	data,
-	// 	parseTime(stamp),
-	// ); err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// // Commit statement to SQL DB
-	// if err := tx.Commit(); err != nil {
-	// 	log.Fatal(err)
-	// }
+	connect.Exec(q)
 
 	log.Infof("Wrote data message %s to Clickhouse successfully", b)
-
-	// TODO: Move query to reporter
-	// rows, err := connect.Query("SELECT id, name, source, message, time FROM element")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// defer rows.Close()
-
-	// for rows.Next() {
-	// 	var (
-	// 		id      string
-	// 		name    string
-	// 		source  string
-	// 		message string
-	// 		time    time.Time
-	// 	)
-	// 	if err := rows.Scan(&id, &name, &source, &message, &time); err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	log.Printf("id: %s, name: %d, source: %d, message: %v, time: %s", id, name, source, message, time)
-	// }
-	// if err := rows.Err(); err != nil {
-	// 	log.Fatal(err)
-	// }
-	// if _, err := connect.Exec("DROP TABLE example"); err != nil {
-	// 	log.Fatal(err)
-	// }
 }
 
 func main() {
@@ -336,13 +243,13 @@ func main() {
 	for r := range replies {
 		log.Debugf("Consuming message number %d", count)
 		log.Infof("[x] Received a message: %s", r.Body)
-		r.Ack(false)
 
 		//TODO: Decoding business logic
 
 		writeDataMessage(r.Body)
 		writeDataMessageClickhouse(r.Body)
 
+		r.Ack(false)
 		count++
 	}
 
@@ -354,13 +261,4 @@ func main() {
 
 	// Close InfluxDB Client
 	defer client.Close()
-
-	// Close batch Clickhouse client
-	defer batch.Close()
-
-	// Close Clickhouse statement
-	// defer stmt.Close()
-
-	// // Close Clickhouse Connection
-	// defer connect.Close()
 }
