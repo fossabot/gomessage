@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
@@ -118,7 +119,7 @@ func createPDF(rows []string) {
 	pdf.AddPage()
 	pdf.SetFont("Arial", "", 11)
 	for i, row := range rows {
-		pdf.Cell(float64(i)*40, 10, row)
+		pdf.Cell(100, float64(i)*10, row)
 	}
 	err := pdf.OutputFileAndClose("/report.pdf")
 	if err != nil {
@@ -127,7 +128,7 @@ func createPDF(rows []string) {
 }
 
 func uploadPDF() {
-	objectName := "report-" + time.Now().String() + ".pdf"
+	objectName := "report-" + strings.TrimSuffix(time.Now().UTC().Local().Format(time.RFC3339), "Z") + ".pdf"
 	filePath := "/report.pdf"
 	contentType := "application/pdf"
 
@@ -169,7 +170,7 @@ func main() {
 	}()
 
 	for {
-		time.Sleep(1 * time.Minute)
+		time.Sleep(2 * time.Minute)
 		data := readDataMessage()
 		createPDF(data)
 		uploadPDF()
