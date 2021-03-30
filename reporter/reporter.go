@@ -118,7 +118,7 @@ func createPDF(rows []string) {
 	pdf.AddPage()
 	pdf.SetFont("Arial", "", 11)
 	for i, row := range rows {
-		pdf.Cell(40, float64(i)*10, row)
+		pdf.Cell(float64(i)*40, 10, row)
 	}
 	err := pdf.OutputFileAndClose("/report.pdf")
 	if err != nil {
