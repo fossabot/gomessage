@@ -134,7 +134,7 @@ spec:
             - "-influxdb-authtoken"
             - "admin:admin"
             - "-clickhouse"
-            - "tcp://127.0.0.1:9000?debug=true"
+            - "127.0.0.1"
             - "-clickhouse-user"
             - "clickhouse_operator"
             - "-clickhouse-password"
