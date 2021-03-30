@@ -51,11 +51,8 @@ func initInfluxDB() {
 			}))
 }
 
-var ctx context.Context
-var minioClient *minio.Client
-
 func initS3() {
-	ctx = context.Background()
+	ctx := context.Background()
 	minioClient, err := minio.New(*s3URI, &minio.Options{
 		Creds:  credentials.NewStaticV4(*s3accesskeyid, *s3accesskeysecret, ""),
 		Secure: false,
@@ -133,6 +130,16 @@ func uploadPDF() {
 	objectName := "report-" + time.Now().String() + ".pdf"
 	filePath := "/report.pdf"
 	contentType := "application/pdf"
+
+	//TODO: Extract common client init logic
+	ctx := context.Background()
+	minioClient, err := minio.New(*s3URI, &minio.Options{
+		Creds:  credentials.NewStaticV4(*s3accesskeyid, *s3accesskeysecret, ""),
+		Secure: false,
+	})
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	// Upload the zip file with FPutObject
 	n, err := minioClient.FPutObject(ctx, *s3bucket, objectName, filePath, minio.PutObjectOptions{ContentType: contentType})
