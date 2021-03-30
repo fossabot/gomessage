@@ -116,9 +116,9 @@ func readDataMessage() []string {
 func createPDF(rows []string) {
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddPage()
-	pdf.SetFont("Arial", "B", 16)
-	for _, row := range rows {
-		pdf.Cell(40, 10, row)
+	pdf.SetFont("Arial", "", 11)
+	for i, row := range rows {
+		pdf.Cell(40, float64(i)*10, row)
 	}
 	err := pdf.OutputFileAndClose("/report.pdf")
 	if err != nil {
