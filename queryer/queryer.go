@@ -1,13 +1,11 @@
 package main
 
 import (
-	"context"
 	"crypto/tls"
 	"flag"
 	"os"
 	"os/signal"
 	"strconv"
-	"strings"
 	"syscall"
 	"time"
 
