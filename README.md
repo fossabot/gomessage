@@ -1,4 +1,4 @@
-# Go Message!
+# GoMessage
 
 [![Build Status](https://travis-ci.com/rmeharg/gomessage.svg)](https://travis-ci.com/rmeharg/gomessage)
 [![codecov](https://codecov.io/gh/rmeharg/gomessage/branch/master/graph/badge.svg)](https://codecov.io/gh/rmeharg/gomessage)
