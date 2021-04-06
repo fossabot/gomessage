@@ -191,7 +191,7 @@ func processDeliveries() {
 				// Publish messages to decoder exchanger
 				publishMessages([]string{string(d.Body)}) // TODO: Replace with "decoded" messages array
 			}
-			// Acknolwedge all messages up to batch and reset
+			// Acknowledge all messages up to batch and reset
 			ch.Ack(deliveries[len(deliveries)-1].DeliveryTag, true)
 			deliveries = nil
 		}
