@@ -1,0 +1,36 @@
+language: go
+
+matrix:
+  fast_finish: true
+  include:
+  - go: 1.12.x
+    env: GO111MODULE=on
+  - go: 1.13.x
+  - go: 1.14.x
+  - go: 1.15.x
+  - go: master
+
+git:
+  depth: 10
+
+before_install:
+  - if [[ "${GO111MODULE}" = "on" ]]; then mkdir "${HOME}/go"; export GOPATH="${HOME}/go"; fi
+
+install:
+  #- if [[ "${GO111MODULE}" = "on" ]]; then go mod download; fi
+  - if [[ "${GO111MODULE}" = "on" ]]; then export PATH="${GOPATH}/bin:${GOROOT}/bin:${PATH}"; fi
+  #- if [[ "${GO111MODULE}" = "on" ]]; then make tools; fi
+
+go_import_path: github.com/rmeharg/gomessage
+
+script:
+  - pushd broadcaster && make install && popd
+  - pushd decoder && make install && popd
+  - pushd listener && make install && popd
+  - pushd queryer && make install && popd
+  - pushd reporter && make install && popd
+  - pushd writer && make install && popd
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+

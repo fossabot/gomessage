@@ -1,5 +1,3 @@
-include .env
-
 PROJECTNAME=$(shell basename "$(PWD)")
 
 # Go related variables.

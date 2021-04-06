@@ -1,2 +1,8 @@
 .env
 bin/
+broadcaster/bin/*
+decoder/bin/*
+listener/bin/*
+queryer/bin/*
+reporter/bin/*
+writer/bin/*
