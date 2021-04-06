@@ -5,7 +5,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/rmeharg/gomessage)](https://goreportcard.com/report/github.com/rmeharg/gomessage)
 [![GoDoc](https://godoc.org/github.com/rmeharg/gomessage?status.svg)](https://godoc.org/github.com/rmeharg/gomessage)
 [![Release](https://img.shields.io/github/release/rmeharg/gomessage.svg?style=flat-square)](https://github.com/rmeharg/gomessage/releases)
-[![TODOs](https://badgen.net/https/api.tickgit.com/badgen/github.com/gin-gonic/gin)](https://www.tickgit.com/browse?repo=github.com/gin-gonic/gin)
+[![TODOs](https://badgen.net/https/api.tickgit.com/badgen/github.com/rmeharg/gomessage)](https://www.tickgit.com/browse?repo=github.com/rmeharg/gomessage)
 
 With [skaffold](https://skaffold.dev/) (distroless 12.6MB):
 
