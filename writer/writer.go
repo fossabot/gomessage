@@ -37,11 +37,7 @@ var (
 )
 
 func init() {
-	flag.Parse()
 	initLog()
-	initAmqp()
-	initInfluxDB()
-	initClickhouse()
 }
 
 func initLog() {
@@ -63,7 +59,7 @@ var (
 	replies <-chan amqp.Delivery
 )
 
-func initAmqp() {
+func configureAmqp() {
 	var err error
 	var q amqp.Queue
 
@@ -146,7 +142,7 @@ var (
 	errorsCh <-chan error
 )
 
-func initInfluxDB() {
+func configureInfluxDB() {
 	// Create a new client using an InfluxDB server base URL and an authentication token
 	client = influxdb2.NewClientWithOptions(*influxURI, *influxToken,
 		influxdb2.DefaultOptions().
@@ -210,7 +206,7 @@ var (
 	connect *clickhouse.Conn
 )
 
-func initClickhouse() {
+func configureClickhouse() {
 	connect = clickhouse.New(*clickhouseURI, 8123, *clickhouseUser, *clickhousePassword)
 
 	q := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS element (
@@ -239,7 +235,12 @@ func writeDataMessageClickhouse(b []byte) {
 }
 
 func main() {
+	flag.Parse()
 	log.Infoln("Start writer...")
+
+	configureAmqp()
+	configureInfluxDB()
+	configureClickhouse()
 
 	var count int = 1
 	for r := range replies {

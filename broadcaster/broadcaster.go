@@ -19,7 +19,6 @@ var (
 )
 
 func init() {
-	flag.Parse()
 	initLog()
 }
 
@@ -61,7 +60,9 @@ func wait() {
 }
 
 func main() {
+	flag.Parse()
 	log.Infoln("Start broadcaster...")
+
 	log.Infof("Broadcasting to %s\n", *multicastURI)
 	ping(*multicastURI)
 	wait()

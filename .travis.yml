@@ -4,7 +4,6 @@ matrix:
   fast_finish: true
   include:
   - go: 1.15.x
-    #env: GO111MODULE=on
   - go: 1.16.x
   - go: master
 
@@ -15,9 +14,7 @@ before_install:
   - if [[ "${GO111MODULE}" = "on" ]]; then mkdir "${HOME}/go"; export GOPATH="${HOME}/go"; fi
 
 install:
-  #- if [[ "${GO111MODULE}" = "on" ]]; then go mod download; fi
   - if [[ "${GO111MODULE}" = "on" ]]; then export PATH="${GOPATH}/bin:${GOROOT}/bin:${PATH}"; fi
-  #- if [[ "${GO111MODULE}" = "on" ]]; then make tools; fi
 
 go_import_path: github.com/rmeharg/gomessage
 
@@ -28,7 +25,7 @@ script:
   - pushd queryer && make install && popd
   - pushd reporter && make install && popd
   - pushd writer && make install && popd
+  - ./test.sh
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-

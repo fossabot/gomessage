@@ -14,14 +14,12 @@ import (
 )
 
 var (
-	influxURI         = flag.String("influxdb", "http://localhost:8086", "InfluxDB URI")
-	influxToken       = flag.String("influxdb-authtoken", "admin:admin", "InfluxDB authentication token (optional)")
+	influxURI   = flag.String("influxdb", "http://localhost:8086", "InfluxDB URI")
+	influxToken = flag.String("influxdb-authtoken", "admin:admin", "InfluxDB authentication token (optional)")
 )
 
 func init() {
-	flag.Parse()
 	initLog()
-	initInfluxDB()
 }
 
 func initLog() {
@@ -32,7 +30,7 @@ func initLog() {
 
 var client influxdb2.Client
 
-func initInfluxDB() {
+func configureInfluxDB() {
 	// Create a new client using an InfluxDB server base URL and an authentication token
 	client = influxdb2.NewClientWithOptions(*influxURI, *influxToken,
 		influxdb2.DefaultOptions().
@@ -57,7 +55,10 @@ func cleanup() {
 }
 
 func main() {
+	flag.Parse()
 	log.Infoln("Start reporter...")
+
+	configureInfluxDB()
 
 	// Watch for CTRL+C / SIGTERM
 	c := make(chan os.Signal)
@@ -68,5 +69,5 @@ func main() {
 		os.Exit(1)
 	}()
 
-	// API Server
+	// TODO: API Server
 }

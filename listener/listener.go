@@ -26,10 +26,7 @@ var (
 )
 
 func init() {
-	flag.Parse()
 	initLog()
-	initAmqp()
-	initUDPListener()
 }
 
 func initLog() {
@@ -41,7 +38,7 @@ func initLog() {
 var conn *amqp.Connection
 var ch *amqp.Channel
 
-func initAmqp() {
+func configureAmqp() {
 	var err error
 
 	conn, err = amqp.Dial(*amqpURI)
@@ -104,13 +101,17 @@ func msgHandler(src *net.UDPAddr, n int, b []byte) {
 	publishMessages(msgs)
 }
 
-func initUDPListener() {
+func configureUDPListener() {
 	log.Infof("Listening on %s", *multicastURI)
 	multicast.Listen(*multicastURI, msgHandler)
 }
 
 func main() {
+	flag.Parse()
 	log.Infoln("Starting listener...")
+
+	configureAmqp()
+	configureUDPListener()
 
 	// Close Channel
 	defer ch.Close()

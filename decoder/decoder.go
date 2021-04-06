@@ -30,9 +30,7 @@ var (
 )
 
 func init() {
-	flag.Parse()
 	initLog()
-	initAmqp()
 }
 
 func initLog() {
@@ -55,7 +53,7 @@ var (
 	replies  <-chan amqp.Delivery
 )
 
-func initAmqp() {
+func configureAmqp() {
 	var err error
 	var q amqp.Queue
 
@@ -205,7 +203,10 @@ func decodeMessageBatch(d []amqp.Delivery) {
 }
 
 func main() {
+	flag.Parse()
 	log.Infoln("Start decoder...")
+
+	configureAmqp()
 
 	// Process delivered messages in batches of 30
 	processDeliveries()

@@ -6,3 +6,4 @@ listener/bin/*
 queryer/bin/*
 reporter/bin/*
 writer/bin/*
+coverage.txt

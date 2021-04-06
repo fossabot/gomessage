@@ -28,10 +28,7 @@ var (
 )
 
 func init() {
-	flag.Parse()
 	initLog()
-	initInfluxDB()
-	initS3()
 }
 
 func initLog() {
@@ -42,7 +39,7 @@ func initLog() {
 
 var client influxdb2.Client
 
-func initInfluxDB() {
+func configureInfluxDB() {
 	// Create a new client using an InfluxDB server base URL and an authentication token
 	client = influxdb2.NewClientWithOptions(*influxURI, *influxToken,
 		influxdb2.DefaultOptions().
@@ -52,7 +49,7 @@ func initInfluxDB() {
 			}))
 }
 
-func initS3() {
+func configureS3() {
 	ctx := context.Background()
 	minioClient, err := minio.New(*s3URI, &minio.Options{
 		Creds:  credentials.NewStaticV4(*s3accesskeyid, *s3accesskeysecret, ""),
@@ -148,7 +145,7 @@ func uploadPDF() {
 		log.Fatalln(err)
 	}
 
-	log.Infof("Successfully uploaded %s of size %d\n", objectName, n)
+	log.Infof("Successfully uploaded %s of size %d\n", objectName, n.Size)
 }
 
 func cleanup() {
@@ -158,7 +155,11 @@ func cleanup() {
 }
 
 func main() {
+	flag.Parse()
 	log.Infoln("Start reporter...")
+
+	configureInfluxDB()
+	configureS3()
 
 	// Watch for CTRL+C / SIGTERM
 	c := make(chan os.Signal)
