@@ -32,6 +32,7 @@ docker run reporter -influxdb "http://influxdb-enterprise-data.influxdb.svc.clus
 
 ```
 go get github.com/azer/yolo
+cd <COMPONENT_NAME>
 make help
 ```
 
