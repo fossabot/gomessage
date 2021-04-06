@@ -42,6 +42,7 @@ func ping(addr string) {
 		msg := stamp + "-datatest" + fmt.Sprint(i)
 		conn.Write([]byte(msg))
 		if *duplicate {
+			log.Infof("[x] Broadcast a message: %s", msg)
 			conn.Write([]byte(msg))
 		}
 		time.Sleep(1 * time.Second)

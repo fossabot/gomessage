@@ -200,6 +200,7 @@ func writeDataMessage(b []byte) {
 
 	// Force all unwritten data to be sent
 	writeAPI.Flush()
+	// TODO: test crash influxdb
 
 	log.Infof("Wrote data message %s to InfluxDB successfully", b)
 }

@@ -51,8 +51,5 @@ COPY --from=builder /go/bin/writer /go/bin/writer
 # Use an unprivileged user.
 USER appuser:appuser
 
-# Expose on a port > 1024
-EXPOSE 8080
-
 # Run the gomessage binary.
 ENTRYPOINT ["/go/bin/writer"]

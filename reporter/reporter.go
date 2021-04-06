@@ -118,8 +118,8 @@ func createPDF(rows []string) {
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddPage()
 	pdf.SetFont("Arial", "", 11)
-	for i, row := range rows {
-		pdf.Cell(100, float64(i)*10, row)
+	for _, row := range rows {
+		pdf.Write(12, row)
 	}
 	err := pdf.OutputFileAndClose("/report.pdf")
 	if err != nil {
@@ -170,7 +170,7 @@ func main() {
 	}()
 
 	for {
-		time.Sleep(2 * time.Minute)
+		time.Sleep(1 * time.Minute)
 		data := readDataMessage()
 		createPDF(data)
 		uploadPDF()
