@@ -110,6 +110,7 @@ func initAmqp() {
 		0,  // prefetch size
 		false,
 	)
+	amqpFailOnError(err, "Error declaring QoS")
 
 	log.Infof("Declared Queue (%q %d messages, %d consumers), binding to Exchange (key %q)",
 		q.Name, q.Messages, q.Consumers, ROUTINGKEY)

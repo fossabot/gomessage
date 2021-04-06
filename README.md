@@ -1,6 +1,6 @@
 # Go Message!
 
-[![Build Status](https://travis-ci.org/rmeharg/gomessage.svg)](https://travis-ci.org/rmeharg/gomessage)
+[![Build Status](https://travis-ci.com/rmeharg/gomessage.svg)](https://travis-ci.com/rmeharg/gomessage)
 [![codecov](https://codecov.io/gh/rmeharg/gomessage/branch/master/graph/badge.svg)](https://codecov.io/gh/rmeharg/gomessage)
 [![Go Report Card](https://goreportcard.com/badge/github.com/rmeharg/gomessage)](https://goreportcard.com/report/github.com/rmeharg/gomessage)
 [![GoDoc](https://godoc.org/github.com/rmeharg/gomessage?status.svg)](https://godoc.org/github.com/rmeharg/gomessage)
