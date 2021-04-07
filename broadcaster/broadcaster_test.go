@@ -22,7 +22,6 @@ func Test_initLog(t *testing.T) {
 }
 
 func TestLogOutputFormat(t *testing.T) {
-	//TODO: Just an example, need to make it work
 	logger, hook := test.NewNullLogger()
 	logger.Error("Helloerror")
 

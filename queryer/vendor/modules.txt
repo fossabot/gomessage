@@ -1,3 +1,5 @@
+# github.com/davecgh/go-spew v1.1.1
+github.com/davecgh/go-spew/spew
 # github.com/deepmap/oapi-codegen v1.3.6
 github.com/deepmap/oapi-codegen/pkg/runtime
 github.com/deepmap/oapi-codegen/pkg/types
@@ -26,9 +28,15 @@ github.com/mattn/go-colorable
 github.com/mattn/go-isatty
 # github.com/pkg/errors v0.9.1
 github.com/pkg/errors
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
 # github.com/sirupsen/logrus v1.8.1
 ## explicit
 github.com/sirupsen/logrus
+github.com/sirupsen/logrus/hooks/test
+# github.com/stretchr/testify v1.4.0
+## explicit
+github.com/stretchr/testify/assert
 # github.com/valyala/bytebufferpool v1.0.0
 github.com/valyala/bytebufferpool
 # github.com/valyala/fasttemplate v1.1.0
