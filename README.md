@@ -7,6 +7,7 @@
 [![License](https://img.shields.io/github/license/rmeharg/gomessage)](https://github.com/rmeharg/gomessage/blob/master/LICENSE)
 [![Release](https://img.shields.io/github/release/rmeharg/gomessage.svg)](https://github.com/rmeharg/gomessage/releases)
 [![TODOs](https://img.shields.io/endpoint?url=https://api.tickgit.com/badge?repo=github.com/rmeharg/gomessage)](https://www.tickgit.com/browse?repo=github.com/rmeharg/gomessage)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Frmeharg%2Fgomessage.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Frmeharg%2Fgomessage?ref=badge_shield)
 
 With [skaffold](https://skaffold.dev/) (distroless 12.6MB):
 
@@ -40,3 +41,7 @@ make help
 ### Architecture
 
 ![alt text](./.ci/gomessage-architecture.png "GoMessage Architecture")
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Frmeharg%2Fgomessage.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Frmeharg%2Fgomessage?ref=badge_large)
